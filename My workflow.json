@@ -1,0 +1,119 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1550fc44-64e8-463d-ae8d-31fa388b55c1",
+      "name": "Telegram Trigger",
+      "webhookId": "d957d687-aeba-4a90-b1e4-65205ec2e3f8",
+      "credentials": {
+        "telegramApi": {
+          "id": "YFPQ41xxBxCLF9V5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openrouter/auto\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.message.text }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "27686122-36dc-4717-8052-ab145a6b05bf",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $node[\"Telegram Trigger\"].json.message.chat.id }}",
+        "text": "={{ $json.choices[0].message.content }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "82d2d619-d975-4fe7-a15a-366fc29ac0e7",
+      "name": "Send a text message",
+      "webhookId": "bc4280e6-3421-482a-8e12-11090966e58c",
+      "credentials": {
+        "telegramApi": {
+          "id": "YFPQ41xxBxCLF9V5",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aa31fbca-cae7-4d6b-9109-95774a085320",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "54dc1d7eed332b46f262b5278d8dcbdef0eeb995ff79b0defa52399bbde7d283"
+  },
+  "id": "i6NWNCVWCYzGPOvn",
+  "tags": []
+}
